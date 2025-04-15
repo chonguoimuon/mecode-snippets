@@ -52,8 +52,6 @@ services:
   n8n:
     image: n8nio/n8n
     restart: always
-    ports:
-      - "5678:5678"
     environment:
       - N8N_HOST=${DOMAIN}
       - N8N_PORT=5678
@@ -61,8 +59,18 @@ services:
       - NODE_ENV=production
       - WEBHOOK_URL=https://${DOMAIN}
       - GENERIC_TIMEZONE=Asia/Ho_Chi_Minh
+      - N8N_DIAGNOSTICS_ENABLED=false
     volumes:
       - $N8N_DIR:/home/node/.n8n
+    networks:
+      - n8n_network
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+
+networks:
+  n8n_network:
+    driver: bridge
 EOF
 
 # Set permissions for n8n directory
@@ -73,13 +81,24 @@ chmod -R 755 $N8N_DIR
 cd $N8N_DIR
 docker-compose up -d
 
-echo "n8n has been installed and configured. Access http://${DOMAIN}:5678 to use it."
-echo "Configuration files and data are stored in $N8N_DIR"
-echo "To complete the installation, you need to configure the proxy. Here's an example configuration for Nginx:"
-
+echo ""
+echo "╔═════════════════════════════════════════════════════════════╗"
+echo "║                                                             ║"
+echo "║  ✅ N8n đã được cài đặt thành công!                        ║"
+echo "║                                                             ║"
+echo "║  🌐 Truy cập: http://${DOMAIN}:5678                        ║"
+echo "║                                                             ║"
+echo "║  📚 Học n8n cơ bản: https://n8n-basic.mecode.pro           ║"
+echo "║                                                             ║"
+echo "╚═════════════════════════════════════════════════════════════╝"
+echo ""
+echo "Để hoàn tất cài đặt, bạn cần cấu hình proxy. Dưới đây là ví dụ cho Nginx:"
+echo ""
+echo "╔═════════════════════════════════════════════════════════════╗"
+echo "║                                                             ║"
+echo "║  🔧 Cấu hình Nginx:                                        ║"
+echo "║                                                             ║"
 cat << EOF
-
-# Example Nginx configuration:
 server {
     listen 80;
     server_name ${DOMAIN};
@@ -92,12 +111,14 @@ server {
         proxy_set_header X-Forwarded-Proto \$scheme;
     }
 }
-
-# After creating the configuration file, you need to:
-# 1. Save this file to /etc/nginx/sites-available/${DOMAIN}
-# 2. Create a symbolic link: sudo ln -s /etc/nginx/sites-available/${DOMAIN} /etc/nginx/sites-enabled/
-# 3. Check Nginx configuration: sudo nginx -t
-# 4. If there are no errors, restart Nginx: sudo systemctl restart nginx
-
-# If you want to use HTTPS, consider using Certbot to automatically install SSL.
 EOF
+echo "║                                                             ║"
+echo "╚═════════════════════════════════════════════════════════════╝"
+echo ""
+echo "Sau khi tạo file cấu hình:"
+echo "1. Lưu vào /etc/nginx/sites-available/${DOMAIN}"
+echo "2. Tạo symbolic link: sudo ln -s /etc/nginx/sites-available/${DOMAIN} /etc/nginx/sites-enabled/"
+echo "3. Kiểm tra cấu hình Nginx: sudo nginx -t"
+echo "4. Nếu không có lỗi, khởi động lại Nginx: sudo systemctl restart nginx"
+echo ""
+echo "Để sử dụng HTTPS, hãy xem xét sử dụng Certbot để cài đặt SSL tự động."
