@@ -53,8 +53,6 @@ services:
   n8n:
     image: n8nio/n8n
     restart: always
-    ports:
-      - "5678:5678"
     environment:
       - N8N_HOST=${DOMAIN}
       - N8N_PORT=5678
@@ -62,8 +60,14 @@ services:
       - NODE_ENV=production
       - WEBHOOK_URL=https://${DOMAIN}
       - GENERIC_TIMEZONE=Asia/Ho_Chi_Minh
+      - N8N_DIAGNOSTICS_ENABLED=false
     volumes:
       - $N8N_DIR:/home/node/.n8n
+    networks:
+      - n8n_network
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
 
   caddy:
     image: caddy:2
@@ -77,6 +81,12 @@ services:
       - caddy_config:/config
     depends_on:
       - n8n
+    networks:
+      - n8n_network
+
+networks:
+  n8n_network:
+    driver: bridge
 
 volumes:
   caddy_data:
@@ -98,7 +108,14 @@ chmod -R 755 $N8N_DIR
 cd $N8N_DIR
 docker-compose up -d
 
-echo "N8n đã được cài đặt và cấu hình với SSL sử dụng Caddy. Truy cập https://${DOMAIN} để sử dụng."
-echo "Các file cấu hình và dữ liệu được lưu trong $N8N_DIR"
-echo "Học N8N cơ bản, hãy truy cập khóa học miễn phí: https://n8n-basic.mecode.pro/"
-echo "Script tạo bởi MeCode: https://mecode.pro"
+echo ""
+echo "╔═════════════════════════════════════════════════════════════╗"
+echo "║                                                             "
+echo "║  ✅ N8n đã được cài đặt thành công!                         "
+echo "║                                                             "
+echo "║  🌐 Truy cập: https://${DOMAIN}                             "
+echo "║                                                             "
+echo "║  📚 Học n8n cơ bản: https://n8n-basic.mecode.pro            "
+echo "║                                                             "
+echo "╚═════════════════════════════════════════════════════════════╝"
+echo ""
