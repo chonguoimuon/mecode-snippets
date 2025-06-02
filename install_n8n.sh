@@ -107,15 +107,3 @@ chmod -R 755 $N8N_DIR
 # Khởi động các container
 cd $N8N_DIR
 docker-compose up -d
-
-echo ""
-echo "╔═════════════════════════════════════════════════════════════╗"
-echo "║                                                             "
-echo "║  ✅ N8n đã được cài đặt thành công!                         "
-echo "║                                                             "
-echo "║  🌐 Truy cập: https://${DOMAIN}                             "
-echo "║                                                             "
-echo "║  📚 Học n8n cơ bản: https://n8n-basic.mecode.pro            "
-echo "║                                                             "
-echo "╚═════════════════════════════════════════════════════════════╝"
-echo ""
